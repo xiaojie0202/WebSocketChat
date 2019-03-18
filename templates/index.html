@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>即时通信</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <style>
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-size: 12px;
+        }
+
+        ul li {
+            list-style: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        p {
+            margin-bottom: 0;
+        }
+
+        hr {
+            margin: 0;
+        }
+
+        body {
+            background: url(/static/img/login_bgi.jpg) no-repeat 0 0;
+            background-size: 1920px 1080px;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 1px;
+        }
+
+        /* 滚动条整体宽度 */
+        ::-webkit-scrollbar-track {
+            background-color: #2e3238;
+        }
+
+        /* 滚动条的滑轨背景颜色 */
+        ::-webkit-scrollbar-thumb {
+            background-color: #5bc0de;
+            border-radius: 2px;
+        }
+
+
+        .main {
+            margin-top: 5%;
+            margin-left: 15%;
+            width: 70%;
+            height: 80%;
+            padding: 1%;
+
+        }
+
+        .left-conn {
+            width: 30%;
+            height: 100%;
+            float: left;
+            background-color: #2e3238;
+            border-top-left-radius: 2%;
+            border-bottom-left-radius: 2%;
+        }
+
+        .right-con {
+            width: 70%;
+            height: 100%;
+            float: right;
+            background-color: #eeeeee;
+            border-top-right-radius: 2%;
+            border-bottom-right-radius: 2%;
+        }
+
+        .user-info {
+            height: 20%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .user-header-img {
+            height: 60%;
+            padding: 10px;
+        }
+
+        .user-info-keys {
+            height: 40%;
+            color: #eeeeee;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .lxrlist {
+            height: 80% !important;
+            width: 100%;
+        }
+
+        .lxrlist .list-group-item {
+            background-color: #2e3238;
+            border-color: #292c33;
+            /*#292c33*/
+
+
+            color: #eeeeee;
+            overflow: auto;
+        }
+
+        .lxr-con {
+            height: 65px;
+
+        }
+
+        .lxr-con img {
+            height: 100%;
+        }
+
+        .chat-name {
+            width: 100%;
+            height: 7%;
+            border-bottom: 1px solid #5e5e5e;
+        }
+
+        .chat-panel {
+            position: relative;
+            width: 100%;
+            height: 63%;
+        }
+
+        .chat-input {
+            width: 100%;
+            height: 30%;
+        }
+
+        .list-group-item img {
+            height: 100%;
+        }
+
+        .list-group {
+            margin: 0;
+            height: 100%;
+        }
+
+        .chat-panel .list-group-item {
+            background-color: #eeeeee;
+            border: 0;
+        }
+
+        .chat-panel-msg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            max-height: 100%;
+            height: 100%;
+            width: 100%;
+        }
+
+        .recv-msg-text-conn {
+            margin: 0 10px;
+            padding: 5px;
+            width: 65%;
+            position: relative;
+            left: 50px;
+            text-align: left;
+        }
+
+        .send-msg-text-conn {
+            margin: 0 50px 0 30%;
+
+            padding: 5px;
+            text-align: right;
+        }
+
+        .chat-text img {
+            height: 40px;
+        }
+
+        .lir-active {
+            background: #3a3f45 !important;
+        }
+
+        .send-msg-text-conn {
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <div class="left-conn">
+        <!--https://i.loli.net/2017/08/21/599a521472424.jpg-->
+        <!--个人信息-->
+        <div class="user-info">
+            <!--头像-->
+            <div class="user-header-img">
+                <img src="http://www.gpqqtx.com/uploads/allimg/150925/0041205560-0.jpg" alt="头像"
+                     class="img-responsive img-circle" style="height: 100%; margin: 0 auto" id="self_head_img">
+            </div>
+            <!--信息-->
+            <div class="user-info-keys">
+                <p>ID:
+                    <small id="self_id">服务器链接中...</small>
+                </p>
+                <p>IP:
+                    <small id="self_ip">服务器链接中...</small>
+                </p>
+                <p>私钥:
+                    <small id="self_private_key">服务器链接中...</small>
+                </p>
+            </div>
+        </div>
+        <hr>
+
+        <!--联系人列表-->
+        <div class="pre-scrollable lxrlist" style="max-height: 80%">
+            <ul class="list-group" id="link_man">
+
+            </ul>
+        </div>
+
+    </div>
+
+    <!--聊天消息-->
+    <div class="right-con">
+        <div class="chat-name">
+            <h2 style="margin: 0;text-align: center; font-size: 16px; padding-top: 1%" id="to_username">联系人姓名</h2>
+        </div>
+
+        <!--每个联系人都对应一个面板-->
+        <div class="chat-panel" id="chat_main_conn">
+
+            <div class="row pre-scrollable chat-panel-msg" id="chat_page_" style="display: none">
+                <ul class="list-group chat-text" id="chat_msg_">
+                    <li class="list-group-item">sdsadsa</li>
+                    <!--消息内容-->
+                    <li class="list-group-item">
+                        <img src="/static/img/a.jpg" alt="头像" class="img-responsive img-rounded pull-left">
+                        <div class="alert alert-success recv-msg-text-conn" role="alert">
+                            加密数据
+                            <hr>
+                            明文数据
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <img src="/static/img/b.jpg" alt="头像" class="img-responsive img-rounded pull-right">
+                        <div class="alert alert-success send-msg-text-conn" role="alert">
+                            <div>
+                                <img src="https://pic.52112.com/icon/256/20170920/9157/509943.png" alt="文件图标">
+                                <span>xiaojie.txt</span>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <img src="/static/img/a.jpg" alt="头像" class="img-responsive img-rounded pull-left">
+                        <div class="alert alert-success recv-msg-text-conn" role="alert">
+                            <div onclick="downloadFile('')">
+                                <img src="/static/img/file.png" alt="文件图标">
+                                <span>xiaojie.txt</span>
+                            </div>
+                        </div>
+                    </li>
+
+
+                </ul>
+            </div>
+
+
+        </div>
+
+
+        <div class="chat-input">
+            <textarea style="width: 100%; height: 80%;resize: none; border: 0; outline: none"
+                      id="text-content"></textarea>
+            <input type="file" id="file" onchange="sendFileMsg()"
+                   style="filter:alpha(opacity=0);opacity:0;width: 0;height: 0;"/>
+            <button type="button" class="btn btn-success pull-right btn-xs" style="margin-right: 5%" id="send-msg"
+                    onclick="sendMsg()">
+                发送（Send）
+            </button>
+            <button type="button" class="btn btn-success pull-right btn-xs" style="margin-right: 5%" id="send-file"
+                    onclick="sendFile()">
+                发送文件（SendFile）
+            </button>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/utlis.js"></script>
+<script>
+    var socket = new WebSocket("ws://" + window.location.host + "/client");
+
+    // 自己的密钥对
+    var keys = getPublicKey();
+
+    // 自己的私钥
+    var selfPrivateKey = keys.privateKey;
+    // 自己的加密解密对象
+    var eg = new Arithmetic(selfPrivateKey);
+
+    // 自己的头像
+    var self_header_img;
+
+    // 当前选中的联系人ID
+    var select_userid;
+    // 当前选中的联系人公钥
+    var select_public_key;
+
+    $(function () {
+        $('body').height(window.innerHeight).width(window.innerWidth);
+        $(window).resize(function () {          //当浏览器大小变化时
+            $('body').height(window.innerHeight).width(window.innerWidth);
+        });
+
+        // 与客户端建立链接，并发送公钥去注册
+        socket.onopen = function (ev) {
+            console.log('Websocket建立链接成功');
+            // 向服务器发送注册信息
+            regsiterUser(keys.publicKey);
+        };
+
+        // 服务器发送回来后处理函数
+        socket.onmessage = function (evt) {  // 收到服务器发送的消息后执行的回调
+            var data = JSON.parse(evt.data);
+            console.log('服务器发送过来的消息!');
+            console.log(data);
+            //  {'msgType': 2, 'node': '注册成功，服务端返回注册信息以及其他在线用户给客户端','data': {'userInfo': {'userId': key, 'ip': ip, 'img': img},'otherUser':[{'ip': value['ip'], 'img': value['img'], 'userId': key}]}}
+            if (data.msgType === 2) initSelfInfo(data.data);
+            // {msgType:3, node:'服务器向在线用户发送新注册的用户信息！', data:[{'userId': key, 'ip': ip, 'img': img}]}
+            if (data.msgType === 3) initLinkMan(data.data);
+            // {msgType:4, node:'服务器向在线用户发送用户离线信息', data:userId}
+            if (data.msgType === 4) closeUser(data.data);
+            // {'msgType': 6, 'node': '服务器向客户端发送指定用户的公钥', 'data': {'publicKey': public_key}}
+            if (data.msgType === 6) initSelectPublicKey(data.data);
+            // {'msgType': 8, 'node': '服务器向客户端发送指定用户的公钥', 'data': {'recvUserId': str(id(self)), 'msg': msg}}
+            if (data.msgType === 8) recvMsgHandel(data.data);
+            // 收到文件消息{'msgType': 10, 'node': '服务器转发文件消息', 'data': {'recvUserId': str(id(self)), 'filename': filename, 'filetext': filetext}}
+            if (data.msgType === 10) recvFileHandel(data.data);
+
+
+        };
+
+
+        document.onkeydown = function (e) {
+            if (!e) {
+                e = window.event;
+            }
+            if ((e.keyCode || e.which) == 13) {
+                sendMsg();
+            }
+        }
+    });
+
+    /****************************************************************************************************************************/
+    // 想服务器发送注册信息
+    function regsiterUser(publicKey) {
+        var data = {msgType: 1, node: '客户端向服务器发送公钥进行注册!', data: {publicKey: publicKey}};
+        socket.send(JSON.stringify(data));
+    }
+
+    // 向服务器索要指定用户的公钥
+    function getThisUserPublicKey(userId) {
+        var data = {msgType: 5, node: '服客户端向服务器索要指定用户的公钥', data: {userId: userId}};
+        socket.send(JSON.stringify(data));
+    }
+
+    // 向服务器发送数据
+    function sendMsgToUser(userId, msg) {
+        var data = {msgType: 7, node: '客户端发送给加密数据给指定的联系人', data: {toUserId: userId, msg: msg}};
+        socket.send(JSON.stringify(data));
+    }
+
+    // 发送文件消息
+    function sendFileMsgToUser(userId, filename, filetext) {
+        var data = {
+            msgType: 9,
+            node: '客户端给指定用户发送文件消息',
+            data: {toUserId: userId, filename: filename, filetext: filetext}
+        };
+        socket.send(JSON.stringify(data))
+
+
+    }
+
+    /****************************************************************************************************************************/
+
+    // 注册成功后的初始化信息
+    function initSelfInfo(data) {
+        // {'userId': key, 'ip': ip, 'img': img}
+        var userInfo = data.userInfo;
+        $('#self_head_img').attr('src', userInfo.img);
+        self_header_img = userInfo.img;
+        $('#self_id').html(userInfo.userId);
+        $('#self_ip').html(userInfo.ip);
+        $('#self_private_key').html(JSON.stringify(selfPrivateKey));
+        initLinkMan(data.otherUser);
+    }
+
+    // 服务器端发送过来其他在线用户
+    function initLinkMan(data) {
+        // [{ip: "127.0.0.1", img: "/static/img/e.jpg", userId: "4431281008"}]
+        // 创建联系人列表，以及联系人对应的聊天面板
+        $.each(data, function (index, item) {
+            var html = "<li class=\"list-group-item lxr-con\" id=\"" + item.userId + "\" onclick=\"linkManClick(" + item.userId + ")\">\n" +
+                "                    <img src=\"" + item.img + "\" alt=\"头像\" class=\"img-responsive img-rounded pull-left\" id=\"user_img_" + item.userId + "\">\n" +
+                "                    <div class=\"pull-right\">\n" +
+                "                        <p>ID:\n" +
+                "                            <small id=\"user_id_" + item.userId + "\">" + item.userId + "</small>\n" +
+                "                        </p>\n" +
+                "                        <p>IP地址:\n" +
+                "                            <small id=\"user_ip_" + item.userId + "\">" + item.ip + "</small>\n" +
+                "                        </p>\n" +
+                "                    </div>\n" +
+                "                </li>"
+
+            $('#link_man').append(html)
+
+            // 创建对应的面板
+            var html2 = "<div class=\"row pre-scrollable chat-panel-msg\" id=\"chat_page_" + item.userId + "\" style=\"display: none\"> <ul class=\"list-group chat-text\" id=\"chat_msg_" + item.userId + "\"></ul></div>"
+            $('#chat_main_conn').append(html2)
+
+        })
+
+    }
+
+    // 有用户离线的时候执行
+    function closeUser(userId) {
+        $('#' + userId).remove();
+        $('#chat_page_' + userId).remove();
+        if (select_userid === userId) {
+            select_userid = undefined;
+            select_public_key = undefined;
+
+        }
+
+        // var u = $('#' + userId);
+        // console.log(u);
+        // u.removeAttr('onclick');
+        // $('#user_img_' + userId).attr('src', '/static/img/no.jpg')
+    }
+
+    // 收到 msgType === 6 服务器端返回指定用户的公钥处理函数
+    function initSelectPublicKey(data) {
+        select_public_key = data.publicKey;
+    }
+
+    // 收到其他用户发送过来的消息后执行
+    function recvMsgHandel(data) {
+        // {'recvUserId': str(id(self)), 'msg': msg}
+        var recvUserId = data.recvUserId;
+        var msg = data.msg;
+        // 进行解密
+        var mList = eg.decryptList(msg);
+        // 解密的list转换成文本
+        var text = intListToStr(mList);
+        // 当前用户的头像
+        var img = $('#user_img_' + recvUserId).attr('src');
+        // 携带加密信息
+        var html = "<li class=\"list-group-item\"><img src=\"" + img + "\" alt=\"头像\" class=\"img-responsive img-rounded pull-left\"><div class=\"alert alert-success recv-msg-text-conn\" role=\"alert\">" + JSON.stringify(msg) + "<hr>" + text + "</div></li>";
+        // 不显示加密信息
+        var html2 = "<li class=\"list-group-item\"><img src=\"" + img + "\" alt=\"头像\" class=\"img-responsive img-rounded pull-left\"><div class=\"alert alert-success recv-msg-text-conn\" role=\"alert\">" + text + "</div></li>";
+        $('#chat_msg_' + recvUserId).append(html2)
+
+        var catDiv = document.getElementById('chat_page_' + recvUserId);
+        catDiv.scrollTop = catDiv.scrollHeight;
+
+    }
+
+    // 收到文件消息
+    function recvFileHandel(data) {
+        // {'recvUserId': str(id(self)), 'filename': filename, 'filetext': filetext}}
+        var recvUserId = data.recvUserId;
+        var filename = data.filename;
+        var filetext = data.filetext;
+
+        // 进行解密
+        var mList = eg.decryptList(filetext);
+        // 解密的list转换成文本
+        var text = intListToStr(mList);
+        // 当前用户的头像
+        var img = $('#user_img_' + recvUserId).attr('src');
+
+        var html = "<li class=\"list-group-item\">\n" +
+            "                        <img src=\"" + img + "\" alt=\"头像\" class=\"img-responsive img-rounded pull-left\">\n" +
+            "                        <div class=\"alert alert-success recv-msg-text-conn\" role=\"alert\">\n" +
+            "                            <div onclick=\"downloadFile('" + filename + '\',\'' + text + "')\">\n" +
+            "                                <img src=\"/static/img/file.png\" alt=\"文件图标\">\n" +
+            "                                <span>" + filename + "</span>\n" +
+            "                            </div>\n" +
+            "                        </div>\n" +
+            "                    </li>"
+
+        $('#chat_msg_' + recvUserId).append(html)
+        var catDiv = document.getElementById('chat_page_' + recvUserId);
+        catDiv.scrollTop = catDiv.scrollHeight;
+
+    }
+
+    /****************************************************************************************************************************/
+    // 联系人点击事件
+    function linkManClick(linkManLiId) {
+        $('#' + linkManLiId).addClass('lir-active').siblings().removeClass('lir-active');
+        select_userid = linkManLiId;
+
+        // 想服务器索要密钥
+        getThisUserPublicKey(linkManLiId);
+
+        var hh = $('#user_id_' + linkManLiId).html() + '----->' + $('#user_ip_' + linkManLiId).html();
+        $('#to_username').html(hh);
+
+        var chatPage = $('#chat_page_' + linkManLiId);
+        // if (chatPage.length > 0) {
+        chatPage.show().siblings().hide();
+
+        var catDiv = document.getElementById('chat_page_' + linkManLiId);
+        catDiv.scrollTop = catDiv.scrollHeight;
+
+
+        // } else {
+        //     var html = "<div class=\"chat-panel\" style=\"display: none\"><div class=\"row pre-scrollable chat-panel-msg\" id=\"chat_page_" + linkManLiId + "\"><ul class=\"list-group chat-text\" id=\"chat_msg_" + linkManLiId + "\"></ul></div></div>"
+        //     $('#chat_main_conn').children().hide().append(html)
+        //
+        // }
+
+    }
+
+    // 发送消息给选中用户
+    function sendMsg() {
+        var text = $('#text-content').val();
+        if (select_public_key && select_userid && text) {
+            var mList = strToIntList(text);
+            var m = eg.encryptList(mList, select_public_key);
+            sendMsgToUser(select_userid, m)
+            // 显示加密信息
+            var html = "<li class=\"list-group-item\"><img src=\"" + self_header_img + "\" alt=\"头像\" class=\"img-responsive img-rounded pull-right\"><div class=\"alert alert-success send-msg-text-conn\" role=\"alert\">" + JSON.stringify(m) + "<hr>" + text + "</div></li>"
+            // 不显示加密信息
+            var html2 = "<li class=\"list-group-item\"><img src=\"" + self_header_img + "\" alt=\"头像\" class=\"img-responsive img-rounded pull-right\"><div class=\"alert alert-success send-msg-text-conn\" role=\"alert\">" + text + "</div></li>"
+            $('#chat_msg_' + select_userid).append(html2)
+            $('#text-content').val('');
+            var catDiv = document.getElementById('chat_page_' + select_userid);
+            catDiv.scrollTop = catDiv.scrollHeight;
+
+        } else {
+            alert('未选择联系人或未输入消息！')
+        }
+
+    }
+
+    //发送文件按钮点击事件
+    function sendFile() {
+        $('#file').click()
+    }
+
+
+    // 发送文件消息
+    function sendFileMsg() {
+        var file = $('#file')[0].files[0];
+
+        if (select_public_key && select_userid && file) {
+
+            var reader = new FileReader();//new一个FileReader实例
+            if (/text+/.test(file.type)) {//判断文件类型，是不是text类型
+                reader.onload = function () {
+                    var text = this.result;
+                    console.log(text)
+                    var mList = strToIntList(text);
+                    var m = eg.encryptList(mList, select_public_key);
+                    sendFileMsgToUser(select_userid, file.name, m)
+
+
+                    var html = "<li class=\"list-group-item\">\n" +
+                        "                        <img src=\"" + self_header_img + "\" alt=\"头像\" class=\"img-responsive img-rounded pull-right\">\n" +
+                        "                        <div class=\"alert alert-success send-msg-text-conn\" role=\"alert\">\n" +
+                        "                            <div onclick=\"downloadFile('" + file.name + '\',\'' + text + "')\">\n" +
+                        "                                <img src=\"/static/img/file.png\" alt=\"文件图标\">\n" +
+                        "                                <span>" + file.name + "</span>\n" +
+                        "                            </div>\n" +
+                        "                        </div>\n" +
+                        "                    </li>"
+
+                    $('#chat_msg_' + select_userid).append(html);
+                    $('#file').val('');
+                    var catDiv = document.getElementById('chat_page_' + select_userid);
+                    catDiv.scrollTop = catDiv.scrollHeight;
+
+                };
+                reader.readAsText(file);
+            } else {
+                alert('所选的文件不是文本文件！')
+            }
+
+
+        } else {
+            alert('未选择文件')
+        }
+
+
+    }
+
+    // 下载文件
+    function downloadFile(filename, text) {
+        console.log(filename, text)
+
+        var elementA = document.createElement('a');
+
+        //文件的名称为时间戳加文件名后缀
+        elementA.download = filename;
+        elementA.style.display = 'none';
+
+        //生成一个blob二进制数据，内容为json数据
+        var blob = new Blob([JSON.stringify(text)]);
+
+        //生成一个指向blob的URL地址，并赋值给a标签的href属性
+        elementA.href = URL.createObjectURL(blob);
+        document.body.appendChild(elementA);
+        elementA.click();
+        document.body.removeChild(elementA);
+    }
+
+</script>
+</html>
